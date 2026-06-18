@@ -13,6 +13,7 @@ Requisitos
   - pandas
   - numpy
   - requests
+  - plotly
   - matplotlib (opcional)
 
 Instalación rápida
@@ -21,7 +22,7 @@ Instalación rápida
 	# Windows
 	.\.venv\Scripts\activate
 2. Instalar dependencias:
-	pip install streamlit pandas numpy requests matplotlib (opcional)
+	pip install -r requirements.txt
 
 Uso
 - Preparar datos (notebook): Abra y ejecute preparar_datos.ipynb en Jupyter/VSCode para descargar y generar el archivo de datos (por ejemplo data/pokedex.csv).
@@ -31,8 +32,9 @@ Uso
 Estructura esperada de archivos de salida
 - data/pokedex.csv (o pokedex.json): archivo con la información de los Pokémon preparada por el notebook.
 
-Nota
+Notas
 - Ajuste las rutas de lectura/escritura en preparar_datos.ipynb o app.py si es necesario.
+- Si no dispone de requirements.txt, instale manualmente los paquetes listados en "Requisitos".
 
 Licencia
 Proyecto de ejemplo para aprendizaje. Use y modifique libremente.
