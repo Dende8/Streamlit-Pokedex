@@ -1,10 +1,28 @@
 import streamlit as st
 from pathlib import Path
 import pandas as pd
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Pokedex", page_icon=":pokeball:", layout="wide")
 st.title("Pokedex")
 st.write("¡Bienvenido a la Pokedex! Aquí encontrarás información sobre los Pokémon de la primera generación.")
+
+STATS = ["hp", "attack", "defense", "special_attack", "special_defense", "speed"]
+COLOR_TIPO = {
+    "normal": "#A8A77A", "fire": "#EE8130", "water": "#6390F0", "grass": "#7AC74C",
+    "electric": "#F7D02C", "ice": "#96D9D6", "fighting": "#C22E28", "poison": "#A33EA1",
+    "ground": "#E2BF65", "flying": "#A98FF3", "psychic": "#F95587", "bug": "#A6B91A",
+    "rock": "#B6A136", "ghost": "#735797", "dragon": "#6F35FC", "dark": "#705746",
+    "steel": "#B7B7CE", "fairy": "#D685AD"}
+
+def oscurece(hex_color, factor=0.65):                # devuelve una versión más oscura de un color (para el degradado)
+    h = hex_color.lstrip("#")                        # "#EE8130" -> "EE8130"
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))  # cada par de hex -> número 0-255 (base 16)
+    r, g, b = (int(c * factor) for c in (r, g, b))   # baja el brillo de cada canal (factor<1 oscurece)
+    return f"#{r:02x}{g:02x}{b:02x}"                 # vuelve a formato hex (02x = 2 dígitos)
+
+def badge_html(tipo):                                # 'píldora' HTML con el nombre del tipo
+    return f'<span class="badge">{tipo}</span>' if pd.notna(tipo) else ""  # "" si el tipo es nulo
 
 
 @st.cache_data
@@ -42,3 +60,29 @@ with tab_ficha:
         st.markdown(f"### {int(p['id']):03d} - {p['name']}")
         st.markdown(f"**Tipo:** {tipos_txt}")
         st.caption(f"Altura: {p['height_m']} | Peso: {p['weight_kg']} | Total de stats: {p['total']}")
+
+    with der:
+        valores = [float(p[s]) for s in STATS]
+        fig = go.Figure(data=go.Scatterpolar(
+            r=valores + [valores[0]], # Para cerrar el gráfico
+            theta=STATS + [STATS[0]], # Para cerrar el gráfico
+            fill='toself',
+            line_color='red'))
+        fig.update_layout(
+            template="plotly_dark",
+            height=430,
+            polar=dict(radialaxis=dict(range=[0,255])),
+            title=f"Stats de {p['name']}") 
+        st.plotly_chart(fig, width="stretch")
+
+
+with tab_dex:
+    n_cols = st.slider("Cartas por fila", 3, 8, 4)
+    cols = st.columns(n_cols)
+
+    #enumarate -> (posicion i, fila) iterrows() recorre el DataFram dila a fila (indice, fila9)
+    for i, (_, p) in enumerate(f.sort_values("id").iterrows()):
+        with cols[i % n_cols]: # i % n_cols -> para que se repita el ciclo de columnas
+            st.image(p["sprite"], width=110) #la imagen
+            st.write(f"**{int(p['id']):03d} - {p['name']}**") # numeor y nombre en engrita
+ 
