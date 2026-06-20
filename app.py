@@ -23,6 +23,14 @@ def badge_html(tipo):                                # 'píldora' HTML con el no
     return f'<span class="badge">{tipo}</span>' if pd.notna(tipo) else ""  # "" si el tipo es nulo
 
 
+@st.dialog("Vista ampliada")
+def mostrar_carta_grande(p):
+    st.image(p["sprite"], width=320)
+    st.markdown(f"### {int(p['id']):03d} - {p['name']}")
+    tipos_txt = " . ".join([t for t in [p["type_1"], p["type_2"]] if pd.notna(t)])
+    st.markdown(f"**Tipo:** {tipos_txt}")
+    st.caption(f"Altura: {p['height_m']} | Peso: {p['weight_kg']} | Total de stats: {p['total']}")
+
 @st.cache_data
 def cargar():
     return pd.read_csv(Path(__file__).parent / "pokemon.csv")
@@ -74,7 +82,7 @@ with tab_ficha:
         st.plotly_chart(fig, width="stretch")
         st.markdown(f"<p style='text-align: center;'><strong>Habilidades:</strong> {p['abilities']}</p>",unsafe_allow_html=True)
 
-
+    
 with tab_dex:
     if not len(f):
         st.warning("No se encontraron Pokémon con esos filtros.")
@@ -91,7 +99,7 @@ with tab_dex:
         for i, (_, p) in enumerate(vista.iterrows()):
             with cols[i % n_cols]: # i % n_cols -> para que se repita el ciclo de columnas
                 st.image(p["sprite"], width=110) #la imagen
-                st.write(f"**{int(p['id']):03d} - {p['name']}**") # numeor y nombre en engrita
+                st.write(f"**{int(p['id']):03d} - {p['name']}**") # numero y nombre en negrita
 
 with tab_versus:
     c1, c2 = st.columns(2)                           # dos columnas iguales para los dos desplegables
