@@ -68,10 +68,11 @@ with tab_ficha:
             ))
         fig.update_layout(
             template="plotly_dark",
-            height=430,
+            height=415,
             polar=dict(radialaxis=dict(range=[0,255])),
             title=f"Stats de {p['name']}") 
         st.plotly_chart(fig, width="stretch")
+        st.markdown(f"<p style='text-align: center;'><strong>Habilidades:</strong> {p['abilities']}</p>",unsafe_allow_html=True)
 
 
 with tab_dex:
